@@ -20,7 +20,7 @@ UBS_FinAI/
 │   ├── llm_client.py            # LLM API client (OpenAI/Anthropic/DeepSeek)
 │   ├── document_loader.py       # PDF text extraction utilities
 │   ├── prompt.py                # LLM prompt templates
-│   ├── prompts.py               # PayoffExtractor main class
+│   ├── extractor.py             # PayoffExtractor main class
 │   ├── payoff_ready_validator.py  # Data validation for payoff calculation
 │   ├── payoff_single.py         # Single underlying Phoenix payoff engine
 │   └── payoff_worst_of.py       # Worst-of Phoenix payoff engine
@@ -77,7 +77,7 @@ UBS_FinAI/
 - LLM prompt templates for extraction tasks
 - Includes payoff extraction, section extraction, and validation prompts
 
-#### `prompts.py`
+#### `extractor.py`
 - `PayoffExtractor` class - main extraction orchestrator
 - Multi-stage extraction pipeline
 - Post-processing and validation logic
@@ -129,7 +129,7 @@ All modules use absolute imports from the project root:
 
 ```python
 # Example imports in tests/
-from src.prompts import PayoffExtractor
+from src.extractor import PayoffExtractor
 from src.payoff_single import SinglePhoenixPayoff
 
 # Example imports in src/
@@ -177,7 +177,7 @@ PDF Term Sheet (data/)
     ↓
 [document_loader.py] → Extract text
     ↓
-[prompts.py + llm_client.py] → LLM extraction
+[extractor.py + llm_client.py] → LLM extraction
     ↓
 [payoff_ready_validator.py] → Validate structure
     ↓
@@ -232,7 +232,7 @@ LLM_TEMPERATURE=0.0
 
 ## Maintenance
 
-- **Adding new extractors**: Place in `src/` and update `prompts.py`
+- **Adding new extractors**: Place in `src/` and update `extractor.py`
 - **Adding new tests**: Place in `tests/` with proper imports
 - **Adding new scripts**: Place in `scripts/` with path setup
 - **Updating documentation**: Keep `docs/` files synchronized

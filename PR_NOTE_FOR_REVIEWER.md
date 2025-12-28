@@ -21,7 +21,7 @@ UBS_FinAI/
 │   ├── llm_client.py                 # LLM API client
 │   ├── document_loader.py            # PDF text extraction
 │   ├── prompt.py                     # LLM prompts
-│   ├── prompts.py                    # PayoffExtractor orchestrator
+│   ├── extractor.py                  # PayoffExtractor orchestrator
 │   ├── payoff_ready_validator.py     # Data validation
 │   ├── payoff_single.py              # Single Phoenix payoff engine
 │   └── payoff_worst_of.py            # Worst-of Phoenix payoff engine
@@ -91,7 +91,7 @@ This is essentially a **complete refactoring** with:
 
 1. **Quick Overview**: Read `README.md` for project summary
 2. **Architecture**: Check `docs/PROJECT_STRUCTURE.md` for detailed breakdown
-3. **Core Logic**: Review `src/prompts.py` for post-processing enhancements
+3. **Core Logic**: Review `src/extractor.py` for post-processing enhancements
 4. **Validation**: See `src/payoff_ready_validator.py` for safety layer
 5. **Testing**: Run `python -m tests.test` to see extraction in action
 

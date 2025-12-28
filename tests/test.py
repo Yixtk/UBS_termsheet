@@ -9,7 +9,7 @@ from datetime import datetime
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from src.prompts import PayoffExtractor
+from src.extractor import PayoffExtractor
 from tests.test_case import TEST_CASES
 
 

@@ -69,7 +69,7 @@ Validated on real term sheets:
 - `payoff_worst_of.py` - Worst-of Phoenix payoff engine
 - `payoff_ready_validator.py` - Data validation layer
 - `prompt.py` - LLM prompt templates
-- `prompts.py` - Enhanced PayoffExtractor with post-processing rules
+- `extractor.py` - Enhanced PayoffExtractor with post-processing rules
 
 ### New Tests (`tests/`)
 - `test_payoff_engines.py` - Payoff engine integration tests
@@ -173,7 +173,7 @@ We also thank our team members for providing detailed analysis files (PDFs and D
 1. **Project Structure** (`README.md`, `docs/PROJECT_STRUCTURE.md`)
    - Understand overall architecture
 
-2. **Core Enhancements** (`src/prompts.py` post-processing logic)
+2. **Core Enhancements** (`src/extractor.py` post-processing logic)
    - Underlying deduplication
    - Structure type inference
 

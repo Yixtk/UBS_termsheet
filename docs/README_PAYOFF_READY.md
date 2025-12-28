@@ -61,7 +61,7 @@
 ### 1. Extract from PDF
 
 ```python
-from prompts import PayoffExtractor
+from extractor import PayoffExtractor
 
 extractor = PayoffExtractor()
 result = extractor.extract_from_pdf("your_termsheet.pdf")
