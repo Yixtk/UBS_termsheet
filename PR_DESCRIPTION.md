@@ -69,7 +69,7 @@
 - `payoff_worst_of.py` - Worst-of Phoenix payoff 引擎
 - `payoff_ready_validator.py` - 数据验证层
 - `prompt.py` - LLM prompt 模板
-- `prompts.py` - 增强的 PayoffExtractor（增加后处理规则）
+- `extractor.py` - 增强的 PayoffExtractor（增加后处理规则）
 
 ### 新增测试 (`tests/`)
 - `test_payoff_engines.py` - Payoff 引擎集成测试
@@ -136,7 +136,7 @@ Payoff Engine
 1. **项目结构** (`README.md`, `docs/PROJECT_STRUCTURE.md`)
    - 了解整体架构
 
-2. **核心增强** (`src/prompts.py` 的后处理逻辑)
+2. **核心增强** (`src/extractor.py` 的后处理逻辑)
    - Underlying 去重
    - Structure type 推断
 

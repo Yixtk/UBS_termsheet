@@ -44,7 +44,7 @@ git push -u origin main
 ```
 UBS_FinAI/
 ├── src/                    # 核心源代码
-│   ├── prompts.py          # 主提取器
+│   ├── extractor.py        # 主提取器
 │   ├── llm_client.py       # LLM API 客户端
 │   ├── payoff_single.py    # 单标的 Phoenix
 │   ├── payoff_worst_of.py  # 最差表现 Phoenix
