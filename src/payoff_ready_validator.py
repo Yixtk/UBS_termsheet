@@ -116,9 +116,118 @@ def validate_for_payoff(extraction_result: Dict) -> Tuple[bool, List[str], Dict]
             if "barrier_level" not in coupon and "barrier_price" not in coupon:
                 warnings.append(f"WARNING: Conditional coupon {i+1} missing barrier info")
     
+    # Layer 7: Cross-field Logical Consistency
+    # 7.1 Barrier level ordering (financial logic validation)
+    knock_in = cleaned.get("knock_in", {})
+    autocall = cleaned.get("autocall", {})
+    coupon_barrier = None
+    
+    # Extract coupon barrier
+    if coupons and len(coupons) > 0:
+        for coupon in coupons:
+            if "barrier_level" in coupon:
+                coupon_barrier = _parse_barrier(coupon["barrier_level"])
+                break
+            elif "barrier_price" in coupon:
+                # For worst-of products with barrier_prices
+                barrier_prices = coupon.get("barrier_prices", [])
+                if barrier_prices and len(barrier_prices) > 0:
+                    first_barrier = barrier_prices[0]
+                    if isinstance(first_barrier, dict) and "barrier_level" in first_barrier:
+                        coupon_barrier = _parse_barrier(first_barrier["barrier_level"])
+                        break
+    
+    # Extract knock-in and autocall barriers
+    ki_barrier = _parse_barrier(knock_in.get("barrier_level", "0%"))
+    ac_barrier = _parse_barrier(autocall.get("barrier_level", "100%"))
+    
+    # Check barrier ordering: knock-in ≤ coupon ≤ autocall
+    if ki_barrier is not None and coupon_barrier is not None:
+        if ki_barrier > coupon_barrier:
+            warnings.append(
+                f"WARNING: Knock-in barrier ({ki_barrier:.1%}) should be ≤ coupon barrier ({coupon_barrier:.1%})"
+            )
+    
+    if coupon_barrier is not None and ac_barrier is not None:
+        if coupon_barrier > ac_barrier:
+            warnings.append(
+                f"WARNING: Coupon barrier ({coupon_barrier:.1%}) should be ≤ autocall barrier ({ac_barrier:.1%})"
+            )
+    
+    # 7.2 Numerical sanity checks for underlyings
+    for i, u in enumerate(underlyings):
+        initial_price = u.get("initial_price")
+        if initial_price is not None:
+            if not isinstance(initial_price, (int, float)):
+                warnings.append(f"WARNING: Underlying {i+1} has non-numeric initial_price: {initial_price}")
+            elif initial_price <= 0:
+                warnings.append(f"WARNING: Underlying {i+1} has invalid initial_price: {initial_price} (must be > 0)")
+    
+    # 7.3 Structure-specific validations
+    if structure_type == "worst_of":
+        # All underlyings should have initial_price for worst-of products
+        missing_prices = []
+        for i, u in enumerate(underlyings):
+            if not u.get("initial_price"):
+                missing_prices.append(i + 1)
+        
+        if missing_prices:
+            warnings.append(
+                f"WARNING: Worst-of product missing initial_price for underlying(s): {missing_prices}"
+            )
+    
+    # 7.4 Date count consistency (if payment_dates exist)
+    payment_dates = dates.get("payment_dates", [])
+    obs_dates = dates.get("observation_dates", [])
+    
+    if payment_dates and obs_dates:
+        if len(payment_dates) != len(obs_dates):
+            warnings.append(
+                f"WARNING: Mismatched date counts - observation_dates: {len(obs_dates)}, "
+                f"payment_dates: {len(payment_dates)}"
+            )
+    
     # All checks passed
     all_messages = errors + warnings
     return True, all_messages, cleaned
+
+
+def _parse_barrier(barrier_value) -> Optional[float]:
+    """
+    Parse barrier level from various formats
+    
+    Args:
+        barrier_value: Can be string like '50%', '50.00%', or numeric
+        
+    Returns:
+        Float representation (e.g., 0.5 for 50%) or None if invalid
+    """
+    if barrier_value is None:
+        return None
+    
+    # If already numeric
+    if isinstance(barrier_value, (int, float)):
+        # Assume it's already in decimal form (0.5) or percentage (50)
+        if barrier_value <= 1.0:
+            return float(barrier_value)
+        else:
+            return float(barrier_value) / 100.0
+    
+    # If string, try to parse
+    if isinstance(barrier_value, str):
+        try:
+            # Remove '%' and whitespace
+            cleaned = barrier_value.strip().replace('%', '').replace(' ', '')
+            value = float(cleaned)
+            # Convert to decimal if it's in percentage form
+            if value > 1.0:
+                return value / 100.0
+            else:
+                return value
+        except (ValueError, AttributeError):
+            return None
+    
+    return None
 
 
 def _remove_noise_fields(result: Dict) -> Dict:
